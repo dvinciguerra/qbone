@@ -1,41 +1,18 @@
 # frozen_string_literal: true
 
-require_relative "qbone/version"
+$LOAD_PATH.unshift File.expand_path(__dir__)
 
 require 'json'
 require 'logger'
 require 'redis'
 require "securerandom"
 
+require "qbone/version"
+require "qbone/worker"
+require "qbone/configuration"
+
 module Qbone
   class Error < StandardError; end
-
-  module Worker
-    def self.included(base)
-      base.extend ClassMethods
-    end
-
-    module ClassMethods
-      def perform_async(*args)
-        Qbone.enqueue(self, *args)
-      end
-
-      def queue
-        "#{self::QUEUE}_queue"
-      end
-
-      def retry
-        Integer(self::RETRY || 0)
-      end
-
-      def dead_letter
-        "#{self::QUEUE}_dead_queue"
-      end
-    end
-  end
-
-  Configuration =
-    Struct.new(:redis, :logger, keyword_init: true)
 
   class << self
     def config
@@ -62,13 +39,13 @@ module Qbone
       job_id = SecureRandom.hex
       enqueued_at = Time.now
 
-      logger.debug({
+      logger.debug(
         job_id:,
         class_name:,
         args:,
         enqueued_at:,
-        message: "Enqueuing #{class_name}",
-      })
+        message: "Enqueuing #{class_name}"
+      )
 
       connection.rpush(
         class_name.queue,
