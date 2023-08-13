@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
+
 require "qbone"
 
 RSpec.configure do |config|
@@ -8,6 +10,8 @@ RSpec.configure do |config|
 
   # Disable RSpec exposing methods globally on `Module` and `main`
   config.disable_monkey_patching!
+
+  config.filter_run_when_matching :focus
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
