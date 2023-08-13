@@ -10,8 +10,9 @@ Qbone.configure do |config|
   config.logger.level = Logger::DEBUG
 end
 
+# Sample of a simple Qbone job  class
 class SampleWorker
-  include Qbone::Worker
+  include Qbone::Job
 
   qbone_options queue: "sample", retries: 3
 
