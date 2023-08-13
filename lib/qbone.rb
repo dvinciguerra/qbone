@@ -8,7 +8,7 @@ require 'redis'
 require "securerandom"
 
 require "qbone/version"
-require "qbone/worker"
+require "qbone/job"
 require "qbone/configuration"
 
 module Qbone
